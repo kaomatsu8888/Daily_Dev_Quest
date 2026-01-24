@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+    <title>フォームぶひん</title>
+</head>
+<!-- 作りたいのはボタンを押したら長いコンテンツが出てくる動作ボタン -->
+<body>
+    <button id="open_button">表示する</button>
+    <div id ="long_content">
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+        <p>長いコンテンツ</p>
+    </div>
+    <script>
+        // caution()で、あこれは関数なんだなとわかる
+        // パラメータはなしの()の関数実際入力値ないしね
+        // const caution = () => {
+        //     alert('クリックされました');
+        // }
+
+        // const btn = document.getElementById('open_button')
+        // イベントを聞いてくれる人を追加してください
+        // clickされたら、cautionを呼び出してください
+        // btn.addEventListener('click', cauton);
+        //↑ これをまとめて書きたい。理由はalert一回しか書いてないから無駄。無名関数です
+        // const btn = document.getElementById('open_button')
+        // btn.addEventListener('click', () => {
+        //     alert('クリックされました');
+        // });
+        //↑上記をさらに無駄なく。btnが一回だけしか読んでないので無駄
+        // 再利用性を高める
+        const longContent = document.getElementById('long_content');
+        longContent.style.display = 'none';
+        document.getElementById('open_button').addEventListener('click', () => {
+            longContent.style.display = 'block';
+        });
+        /*
+        古い書き方その1
+        function caution() {
+            alert('クリックされました');
+        }
+        古い書き方その2
+        const caution = fanction() {
+            alert('クリックされました')
+        }
+        */
+    </script>
+</body>
+
+</html>
+

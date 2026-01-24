@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+    <title>フォームぶひん</title>
+</head>
+
+<body>
+    <script>
+        const today = new Date();
+        const theYear = today.getFullYear();
+        const theMounth = today.getMonth() + 1; // 0 - 11までだよ
+        const theDate = today.getDate();
+        //documentもオブジェクトらしい
+        // documentは document = new Document();
+        document.write('今日は、' + theYear + '/'
+         + theMounth + '/' + theDate + 'です');
+    </script>
+</body>
+
+</html>
+
