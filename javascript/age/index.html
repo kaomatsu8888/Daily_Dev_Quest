@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+    <title>フォームぶひん</title>
+</head>
+
+<body>
+    <form action="" method="">
+        <label>
+            年齢:  <input type ="number" name="name" id="age" name="age"><br>
+        </label>
+        <button type="submit">送信</button>
+    </form>
+    <!-- ポイントbodyタグの一番下にスクリプト置く。なぜ？ -->
+    <script>
+        document.querySelector('form').addEventListener('submit',() => {
+            alert('フォームが送信されました')
+        });
+    </script>
+</body>
+
+</html>
+

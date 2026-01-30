@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+    <title>フォーム</title>
+</head>
+
+<body>
+    <!-- 質問1:なぜこのformたぐは必要ですか？ -->
+    <form>
+        <div>
+            <label>
+            <input type="checkbox" name="agree" id="agree">
+                同意する
+            </label>
+        </div>
+        <div>
+            <button type="submit">送信</button>
+        </div>
+    </form>
+    <script>
+        //memoです //idを何でもかんでも作成するのはめんどくさい(そうかな？)
+        // // idをしぼらなくてもクエリセレクタは使用できますが、もう一個ボタン作成したら、ボタン要素が二個になるから
+        // // 干渉しちゃう。よって確実に特定できるときしかだめですよ
+        // //clickでも良いが、キーボードで操作することが想定できるのでchengeのほうが望ましい
+    </script>
+    <script>
+        // document.querySelector('button').disabled = true;// プロパティがtrue
+        // const checkbox = document.querySelector('#agree');
+        // 上記を無駄なくまとめます
+        const button = document.querySelector('button');
+        const checkbox = document.querySelector('#agree');
+        button.disabled = true;
+        checkbox.addEventListener('change', () => {
+            //チェックボックスのチェックが付いていたら、ボタンを有効にし、ついていなければ無効にする
+        //     if (checkbox.checked === true) {
+        //         button.disabled = false;   
+        //     }else {
+        //         button.disabled = true; //プロパティをfalseに変更
+        //     }
+            //わかりにくいから中級者向けの例ね
+            button.disabled = !checkbox.checked;
+        });
+        // 超シンプルにできます！
+
+    </script>
+</body>
+
+</html>
+
+
+<!-- 回答1:それはチェックボックスなどを設置するために必要 -->
+ <!-- 正しくない -->
+<!-- ○ チェックボックス等を「送信対象」として扱うため -->
+ <!-- button書いたとして、その値ってどこに送るのよ？ -->
+
+ <!-- 疑問：chekedってなにもの？ -->
+  <!-- checked は
+「チェックボックスが今チェックされているか」を表す
+boolean（true / false）のプロパティ -->
