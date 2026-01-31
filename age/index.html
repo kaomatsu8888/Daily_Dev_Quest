@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+    <title>age</title>
+</head>
+
+<body>
+    <form action="" method="get">
+        <label>
+            年齢： <input type="number" id = "age" name="age">
+        </label>
+        <button type="submit">送信</button>
+    <!-- 基本形<ふぉーむあくしょん="URL" メソッド="送信方法">省略もできるよ -->
+    </form>
+
+    <script>
+        // eventのe なんでもいいよabcでもeventでも
+        // eは無名関数というぱらめーたをたせる。
+        document.querySelector('form').addEventListener('submit', (e) => {
+            // e.preventDefault(); フォームの標準の動作を防いだ
+            alert('フォームがキャンセルさえれました')
+        });
+    </script>
+</body>
+
+</html>
+

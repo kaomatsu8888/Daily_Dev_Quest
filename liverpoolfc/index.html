@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Liverpool Player Favorites</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        .player {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .star {
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 8px;
+            color: #ccc;
+        }
+        .star.is-favorite {
+            color: gold;
+        }
+        button {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>リバプール選手一覧</h1>
+
+<!-- 選手一覧表示エリア -->
+<div id="player-list"></div>
+
+<!-- 確定（保存）ボタン -->
+<button id="save-button">確定（サーバーに送る想定）</button>
+<p></p>
+<p></p>
+<script>
+/**
+ * ============================
+ * ① 選手マスタデータ
+ * ============================
+ * ・配列：選手の集合
+ * ・オブジェクト：1人の選手
+ * ・id：内部管理用（絶対に変わらない）
+ */
+const players = [
+    { id: 1, name: 'アリソン・ベッカー', number: 1, position: 'GK' },
+    { id: 2, name: 'モハメド・サラー', number: 11, position: 'FW' },
+    { id: 3, name: 'フィルジル・ファン・ダイク', number: 4, position: 'DF' },
+    { id: 4, name: 'トレント・アレクサンダー＝アーノルド', number: 66, position: 'DF' }
+];
+
+/**
+ * ============================
+ * ② お気に入り状態（ユーザー操作）
+ * ============================
+ * ・id の配列で管理
+ * ・クライアントサイドで一時保持
+ */
+let favoriteIds = [];
+console.log(favoriteIds)
+/**
+ * ============================
+ * ③ 描画処理
+ * ============================
+ * ・状態（players + favoriteIds）から画面を作る
+ * ・DOMを毎回作り直す
+ */
+function render() {
+    // listEl(要素)を定義。player-listのid要素を取得
+    const listEl = document.getElementById('player-list');
+    //一回からにします(なんで？まっさらにする必要ある？) →ありますぜ。これせんと延々にプレイヤーが出てくる。★を押した状態の
+    listEl.innerHTML = '';
+    // 名簿の4人の情報を送るね。100人いたら100回繰り返すよ
+    // このしたのプレイヤーね
+    // const players = [
+    //     { id: 1, name: 'アリソン・ベッカー', number: 1, position: 'GK' },
+        //     { id: 2, name: 'モハメド・サラー', number: 11, position: 'FW' },
+    //     { id: 3, name: 'フィルジル・ファン・ダイク', number: 4, position: 'DF' },
+    //     { id: 4, name: 'トレント・アレクサンダー＝アーノルド', number: 66, position: 'DF' }
+    // ];
+    // プレイヤーを取り出して、それぞれの指示書をカスタムして組み立てていこうぜ
+    // 途中でイベントが入っているが恐れることはないスターつけるだけだぜ
+    // 基本的な使い方を伝授するぜ”””
+    // var array = [配列データ];
+    // array.forEach( コールバック関数 )
+    players.forEach(player => {
+        // スターつけてたら(お気に入り)trueなる
+        const isFavorite = favoriteIds.includes(player.id);
+        console.log("render関数内isFavorite11の中身" + isFavorite)
+        const playerEl = document.createElement('div');
+        playerEl.className = 'player';
+
+        const starEl = document.createElement('span');
+        starEl.className = 'star' + (isFavorite ? ' is-favorite' : '');
+        starEl.textContent = '★';
+
+        // ★クリックイベント
+        starEl.addEventListener('click', () => {
+            //別の場所に定義しているよ
+            toggleFavorite(player.id);
+        });
+
+        const textEl = document.createElement('span');
+        textEl.textContent = `#${player.number} ${player.name}（${player.position}）`;
+
+        playerEl.appendChild(starEl);
+        playerEl.appendChild(textEl);
+        listEl.appendChild(playerEl);
+    });
+}
+
+/**
+ * ============================
+ * ④ お気に入り切り替え処理
+ * ============================
+ * ・すでにあれば削除
+ * ・なければ追加
+ */
+function toggleFavorite(playerId) {
+    if (favoriteIds.includes(playerId)) {
+        // 解除
+        favoriteIds = favoriteIds.filter(id => id !== playerId);
+    } else {
+        // 追加
+        favoriteIds.push(playerId);
+    }
+
+    // 状態が変わったら再描画
+    render();
+}
+
+/**
+ * ============================
+ * ⑤ 確定ボタン（POST想定）
+ * ============================
+ * ・本来はここでサーバーに送る
+ */
+document.getElementById('save-button').addEventListener('click', () => {
+    // CakePHPでいう POST データ
+    const postData = {
+        favorite_player_ids: favoriteIds
+    };
+
+    console.log('サーバーに送る想定データ:', postData);
+
+    alert(
+        '送信データ:\n' +
+        JSON.stringify(postData, null, 2)
+    );
+});
+
+/**
+ * ============================
+ * 初期描画
+ * ============================
+ */
+render();
+</script>
+
+</body>
+</html>

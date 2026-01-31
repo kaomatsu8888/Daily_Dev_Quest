@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Liverpool Player Favorites - Sort</title>
+  <style>
+    body { font-family: sans-serif; }
+    .controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .player { display: flex; align-items: center; margin-bottom: 8px; }
+    .star { cursor: pointer; font-size: 20px; margin-right: 8px; color: #ccc; user-select: none; }
+    .star.is-favorite { color: gold; }
+    button { margin-top: 16px; }
+    select { padding: 4px; }
+    .small { color: #666; font-size: 12px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<h1>リバプール選手一覧（並び替えつき）</h1>
+
+<!-- 並び替えコントロール -->
+<div class="controls">
+  <label>
+    並び替えキー：
+    <select id="sort-key">
+      <option value="number">背番号</option>
+      <option value="name">名前</option>
+      <option value="position">ポジション</option>
+    </select>
+  </label>
+
+  <label>
+    昇順/降順：
+    <select id="sort-dir">
+      <option value="asc">昇順</option>
+      <option value="desc">降順</option>
+    </select>
+  </label>
+</div>
+
+<div class="small">
+  ※ players（マスタ）は変更せず、表示用コピーを並び替えています（実務で安全なやり方）。
+</div>
+
+<!-- 選手一覧表示エリア -->
+<div id="player-list"></div>
+
+<!-- 確定（保存）ボタン -->
+<button id="save-button">確定（サーバーに送る想定）</button>
+
+<script>
+/**
+ * ============================
+ * ① 選手マスタデータ（不変に近い扱い）
+ * ============================
+ * ・配列：選手の集合
+ * ・オブジェクト：1人の選手（1レコード）
+ * ・id：内部管理用（不変）
+ */
+const players = [
+  { id: 1, name: 'アリソン・ベッカー', number: 1, position: 'GK' },
+  { id: 2, name: 'モハメド・サラー', number: 11, position: 'FW' },
+  { id: 3, name: 'フィルジル・ファン・ダイク', number: 4, position: 'DF' },
+  { id: 4, name: 'トレント・アレクサンダー＝アーノルド', number: 66, position: 'DF' },
+  { id: 5, name: 'アレクシス・マック・アリスター', number: 10, position: 'MF' }
+];
+
+/**
+ * ============================
+ * ② お気に入り状態（ユーザー状態）
+ * ============================
+ * ・id配列で持つ（DOMに持たない）
+ */
+let favoriteIds = [];
+
+/**
+ * ============================
+ * ③ 並び替え状態（UI状態）
+ * ============================
+ */
+let sortKey = 'number'; // 'number' | 'name' | 'position'
+let sortDir = 'asc';    // 'asc' | 'desc'
+
+/**
+ * ============================
+ * ④ 並び替え用の比較関数を返す
+ * ============================
+ * keyとdirを受けて、sortに渡す compare(a,b) を作る
+ */
+function createCompare(key, dir) {
+  const direction = (dir === 'asc') ? 1 : -1;
+
+  return (a, b) => {
+    // 数値キー
+    if (key === 'number') {
+      return (a.number - b.number) * direction;
+    }
+
+    // 文字列キー（日本語/記号含むのでlocaleCompare）
+    if (key === 'name') {
+      return a.name.localeCompare(b.name, 'ja') * direction;
+    }
+
+    if (key === 'position') {
+      return a.position.localeCompare(b.position, 'ja') * direction;
+    }
+
+    // 想定外は変化なし
+    return 0;
+  };
+}
+
+/**
+ * ============================
+ * ⑤ 表示用プレイヤー配列を作る
+ * ============================
+ * ・マスタ(players)は触らずコピーして並び替える
+ */
+function getViewPlayers() {
+  const view = players.slice(); // シャローコピー
+  view.sort(createCompare(sortKey, sortDir));
+  return view;
+}
+
+/**
+ * ============================
+ * ⑥ 描画処理
+ * ============================
+ * ・状態（favoriteIds / sortKey / sortDir）から画面を再構築
+ */
+function render() {
+  const listEl = document.getElementById('player-list');
+  listEl.innerHTML = '';
+
+  const viewPlayers = getViewPlayers();
+
+  viewPlayers.forEach(player => {
+    const isFavorite = favoriteIds.includes(player.id);
+
+    const row = document.createElement('div');
+    row.className = 'player';
+
+    const star = document.createElement('span');
+    star.className = 'star' + (isFavorite ? ' is-favorite' : '');
+    star.textContent = '★';
+    star.addEventListener('click', () => toggleFavorite(player.id));
+
+    const text = document.createElement('span');
+    text.textContent = `#${player.number} ${player.name}（${player.position}）`;
+
+    row.appendChild(star);
+    row.appendChild(text);
+    listEl.appendChild(row);
+  });
+}
+
+/**
+ * ============================
+ * ⑦ お気に入り切り替え
+ * ============================
+ */
+function toggleFavorite(playerId) {
+  if (favoriteIds.includes(playerId)) {
+    favoriteIds = favoriteIds.filter(id => id !== playerId);
+  } else {
+    favoriteIds.push(playerId);
+  }
+  render();
+}
+
+/**
+ * ============================
+ * ⑧ UIイベント：並び替え条件の更新
+ * ============================
+ */
+document.getElementById('sort-key').addEventListener('change', (e) => {
+  sortKey = e.target.value;
+  render();
+});
+
+document.getElementById('sort-dir').addEventListener('change', (e) => {
+  sortDir = e.target.value;
+  render();
+});
+
+/**
+ * ============================
+ * ⑨ 確定（POST想定）
+ * ============================
+ * ・ここで favoriteIds をサーバへ送る想定
+ */
+document.getElementById('save-button').addEventListener('click', () => {
+  const postData = {
+    favorite_player_ids: favoriteIds,
+    sort: { key: sortKey, dir: sortDir } // ※保存したいなら一緒に送れる
+  };
+
+  console.log('サーバーに送る想定データ:', postData);
+  alert('送信データ:\n' + JSON.stringify(postData, null, 2));
+});
+
+/**
+ * 初期描画
+ */
+render();
+</script>
+
+</body>
+</html>
